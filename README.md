@@ -1,5 +1,6 @@
-修改了test.py使其测试不需要gt真值。
-修改了test.py引用的data.py中加载数据函数，rgb图像可以是png后缀。
+修改了test.py与data.py使其测试不需要gt真值。修改了data.py加载数据函数，rgb图像可以是png后缀。
+
+测试图像放在创建文件夹dataset下
 
 
 # BTS-Net (ICME 2021)
