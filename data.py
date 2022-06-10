@@ -185,15 +185,15 @@ def get_loader(image_root, gt_root,depth_root, batchsize, trainsize, shuffle=Tru
 
 #test dataset and loader
 class test_dataset:
-    def __init__(self, image_root, gt_root,depth_root, testsize):
+    #def __init__(self, image_root, gt_root,depth_root, testsize):
+    def __init__(self, image_root,depth_root, testsize):
         self.testsize = testsize
-        self.images = [image_root + f for f in os.listdir(image_root) if f.endswith('.jpg')]
-        self.gts = [gt_root + f for f in os.listdir(gt_root) if f.endswith('.jpg')
-                       or f.endswith('.png')]
+        self.images = [image_root + f for f in os.listdir(image_root) if f.endswith('.jpg') or f.endswith('.png')]
+        # self.gts = [gt_root + f for f in os.listdir(gt_root) if f.endswith('.jpg') or f.endswith('.png')]
         self.depths=[depth_root + f for f in os.listdir(depth_root) if f.endswith('.bmp')
                     or f.endswith('.png')]
         self.images = natsorted(self.images)
-        self.gts = natsorted(self.gts)
+        #self.gts = natsorted(self.gts)
         self.depths= natsorted(self.depths)
         # print(self.images)
         # print(self.depths)
@@ -203,7 +203,7 @@ class test_dataset:
             transforms.Resize((self.testsize, self.testsize)),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-        self.gt_transform = transforms.ToTensor()
+        #self.gt_transform = transforms.ToTensor()
         # self.gt_transform = transforms.Compose([
         #     transforms.Resize((self.trainsize, self.trainsize)),
         #     transforms.ToTensor()])
@@ -217,18 +217,19 @@ class test_dataset:
     def load_data(self):
         image = self.rgb_loader(self.images[self.index])
         image = self.transform(image).unsqueeze(0)
-        gt = self.binary_loader(self.gts[self.index])
+        #gt = self.binary_loader(self.gts[self.index])
         depth=self.rgb_loader(self.depths[self.index])
         pesudo_depth = self.depths_transform(self.rgb_loader_ops(self.gts[self.index])).unsqueeze(0)
         depth=self.depths_transform(depth).unsqueeze(0)
         name = self.images[self.index].split('/')[-1]
         image_for_post=self.rgb_loader(self.images[self.index])
-        image_for_post=image_for_post.resize(gt.size)
+        #image_for_post=image_for_post.resize(gt.size)
         if name.endswith('.jpg'):
             name = name.split('.jpg')[0] + '.png'
         self.index += 1
         self.index = self.index % self.size
-        return image, gt,depth, name,np.array(image_for_post)
+        #return image, gt,depth, name,np.array(image_for_post)
+        return image,depth, name,np.array(image_for_post)
 
     def rgb_loader(self, path):
         with open(path, 'rb') as f:
@@ -250,22 +251,26 @@ class test_dataset:
         return self.size
 
     def filter_files(self):
-        assert len(self.images) == len(self.gts) and len(self.gts)==len(self.images)
+        #assert len(self.images) == len(self.gts) and len(self.gts)==len(self.images)
+        assert len(self.images) ==len(self.images)
         images = []
-        gts = []
+        #gts = []
         depths=[]
-        for img_path, gt_path,depth_path in zip(self.images, self.gts, self.depths):
+        #for img_path, gt_path,depth_path in zip(self.images, self.gts, self.depths):\
+        for img_path,depth_path in zip(self.images, self.depths):
             img = Image.open(img_path)
-            gt = Image.open(gt_path)
+            #gt = Image.open(gt_path)
             depth= Image.open(depth_path)
-            if img.size == gt.size and gt.size==depth.size:
+            #if img.size == gt.size and gt.size==depth.size:
+            if img.size==depth.size:
                 images.append(img_path)
-                gts.append(gt_path)
+                #gts.append(gt_path)
                 depths.append(depth_path)
             # else:
             #     print(img.size, depth.size, gt.size)
         self.images = images
-        self.gts = gts
+        #self.gts = gts
         self.depths = depths
-        assert len(self.images) == len(self.gts) and len(self.gts) == len(self.images)
+        #assert len(self.images) == len(self.gts) and len(self.gts) == len(self.images)
+        assert len(self.images) == len(self.images)
 
