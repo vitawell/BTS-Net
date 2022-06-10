@@ -1,3 +1,7 @@
+修改了test.py使其测试不需要gt真值。
+修改了test.py引用的data.py中加载数据函数，rgb图像可以是png后缀。
+
+
 # BTS-Net (ICME 2021)
 [BTS-NET: BI-DIRECTIONAL TRANSFER-AND-SELECTION NETWORK FOR RGB-D SALIENT OBJECT DETECTION](https://arxiv.org/pdf/2104.01784.pdf)
 
